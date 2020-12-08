@@ -36,5 +36,10 @@ namespace BradshawProject.Objects
 
             return isValidLimit;
         }
+
+        public bool IsBlackListContainsThisMerchant(string merchant)
+        {
+            return Blacklist.Contains(merchant);
+        }
     }
 }

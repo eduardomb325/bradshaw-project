@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:60000",
+      "applicationUrl": "http://localhost:61000",
       "sslPort": 0
     }
   },
@@ -24,14 +24,14 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:60000"
+      "applicationUrl": "http://localhost:61000"
     },
     "Docker": {
       "commandName": "Docker",
       "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/bradshawProject",
       "publishAllPorts": true,
-      "httpPort": 60000
+      "httpPort": 61000
     }
   }
 }

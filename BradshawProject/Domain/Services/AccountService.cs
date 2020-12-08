@@ -1,4 +1,5 @@
-﻿using BradshawProject.Objects;
+﻿using BradshawProject.Domain.Repositories.Interface;
+using BradshawProject.Objects;
 using BradshawProject.Services.Interface;
 using System;
 using System.Collections.Generic;
@@ -9,14 +10,15 @@ namespace BradshawProject.Services
 {
     public class AccountService : IAccountService
     {
-        public AccountService()
+        private readonly IAccountRepository _accountRepository;
+        public AccountService(IAccountRepository accountRepository)
         {
-             
+            _accountRepository = accountRepository;
         }
 
         public Account GetAccountData()
         {
-            throw new NotImplementedException();
+            return _accountRepository.GetAccount();
         }
 
         public void RegisterDataToAccount(Account account)
@@ -26,8 +28,7 @@ namespace BradshawProject.Services
                 
             }
 
-
-            throw new NotImplementedException();
+            _accountRepository.RegisterDataToAccount(account);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using BradshawProject.Objects;
+﻿using BradshawProject.Domain.Objects;
+using BradshawProject.Objects;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -14,5 +15,7 @@ namespace BradshawProject.Domain.Repositories.Context
         }
 
         public DbSet<Account> Accounts { get; set; }
+
+        public DbSet<Transaction> Transactions { get; set; }
     }
 }
