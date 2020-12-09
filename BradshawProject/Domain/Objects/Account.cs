@@ -1,20 +1,22 @@
 ﻿using BradshawProject.Domain.Objects;
-using System;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace BradshawProject.Objects
 {
     public class Account
     {
+        [Key]
+        [Required]
         [JsonPropertyName("cardIsActive")]
         public bool CardIsActive { get; set; }
 
         [JsonPropertyName("blacklist")]
-        public List<string> Blacklist { get; set; }
+        public List<string> Blacklist { get; set; } = new List<string>();
 
+        [Required]
         [JsonPropertyName("limit")]
         public double Limit { get; set; }
 
@@ -25,7 +27,15 @@ namespace BradshawProject.Objects
         {
 
         }
-        
+
+        public Account(bool cardIsActive, List<string> blacklist, double limit, bool isWhitelisted)
+        {
+            CardIsActive = cardIsActive;
+            Blacklist = blacklist;
+            Limit = limit;
+            IsWhitelisted = isWhitelisted;
+        }
+
         public bool IsValidLimit()
         {
             bool isValidLimit = true;

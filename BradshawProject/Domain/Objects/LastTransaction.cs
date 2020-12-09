@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace BradshawProject.Domain.Objects
 {
-    public class LastTransaction : Transaction
+    public class LastTransaction
     {
         public bool Approved { get; set; } = false;
 
         public double NewLimit { get; set; } = 0;
 
-        public List<string> DeniedReasons { get; set; }
+        public List<string> DeniedReasons { get; set; } = new List<string>();
 
         public LastTransaction()
         {

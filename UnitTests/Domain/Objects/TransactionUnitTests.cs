@@ -21,13 +21,13 @@ namespace UnitTests.Domain.Objects
         }
 
         [Test]
-        public void When_Transaction_Not_Pass_Limit_Returns_False()
+        public void When_Transaction_Not_Pass_Limit_Returns_True()
         {
             Transaction transaction = new Transaction();
 
             transaction.Amount = 5000;
 
-            RuleVerification ruleVerification = transaction.IsTransactionOverThanLimit(10000, 1);
+            RuleVerification ruleVerification = transaction.IsTransactionOverThanLimit(10000, 100);
 
             Assert.IsTrue(ruleVerification.IsValidationPass);
         }
@@ -39,7 +39,7 @@ namespace UnitTests.Domain.Objects
 
             transaction.Amount = 4500;
 
-            RuleVerification ruleVerification = transaction.IsTransactionOverThanLimit(5000, 0.9);
+            RuleVerification ruleVerification = transaction.IsTransactionOverThanLimit(5000, 90);
 
             Assert.IsTrue(ruleVerification.IsValidationPass);
         }
@@ -51,7 +51,7 @@ namespace UnitTests.Domain.Objects
 
             transaction.Amount = 4600;
 
-            RuleVerification ruleVerification = transaction.IsTransactionOverThanLimit(5000, 0.9);
+            RuleVerification ruleVerification = transaction.IsTransactionOverThanLimit(5000, 90);
 
             Assert.IsFalse(ruleVerification.IsValidationPass);
         }

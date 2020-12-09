@@ -9,8 +9,9 @@ namespace BradshawProject.Domain.Services.Interfaces
 {
     public interface ITransactionService
     {
-        List<LastTransaction> GetLastTransactions();
+        List<Transaction> GetLastTransactions();
         LastTransaction ProcessTransactionService(Transaction transaction);
-        List<RuleVerification> RuleVerifications(Account account, Transaction transaction, LastTransaction lastTransaction);
+        List<RuleVerification> RuleVerifications(Account account, Transaction transaction);
+        List<Transaction> SetLastTransactions(List<Transaction> transactions);
     }
 }

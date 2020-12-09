@@ -12,5 +12,7 @@ namespace BradshawProject.Domain.Repositories.Interface
         Account GetAccount();
         Account RegisterDataToAccount(Account account);
         Account UpdateAccount(Account account);
+
+        Account DeleteAccount(Account account); 
     }
 }

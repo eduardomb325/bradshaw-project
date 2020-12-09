@@ -1,21 +1,23 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace BradshawProject.Domain.Objects
 {
     public class Transaction
     {
-        [JsonPropertyName("merchant")]
-        public string Merchant { get; set; }
-
+        [Required]
         [JsonPropertyName("amount")]
         public double Amount { get; set; }
 
+        [Required]
+        [JsonPropertyName("merchant")]
+        public string Merchant { get; set; }
+
+        [Key]
         [JsonPropertyName("time")]
+        [Required]
         public string Time { get; set; }
 
         private readonly IConfiguration Configuration;
@@ -25,11 +27,18 @@ namespace BradshawProject.Domain.Objects
 
         }
 
+        public Transaction(double amount, string merchant, string time)
+        {
+            Amount = amount;
+            Merchant = merchant;
+            Time = time;
+        }
+
         public RuleVerification IsTransactionOverThanLimit(double limit, double limitPercentage)
         {
             bool isTransactionOverThanLimit = false;
 
-            double limitToCheck = limit * limitPercentage;
+            double limitToCheck = limit * (limitPercentage / 100);
 
             if (Amount > limitToCheck)
             {
@@ -43,7 +52,7 @@ namespace BradshawProject.Domain.Objects
 
         public RuleVerification CanThisMerchantSellsToAccount(int shopMerchantTimes, int merchantLimit)
         {
-            bool isMerchantReachTheLimit = shopMerchantTimes > merchantLimit;
+            bool isMerchantReachTheLimit = shopMerchantTimes >= merchantLimit;
 
             RuleVerification response = new RuleVerification(!isMerchantReachTheLimit, "Shop Merchant Limit");
 

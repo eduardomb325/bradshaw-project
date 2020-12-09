@@ -23,9 +23,25 @@ namespace BradshawProject.Services
 
         public Account RegisterDataToAccount(Account account)
         {
-            _accountRepository.RegisterDataToAccount(account);
+            try
+            {
+                var isAnotherAccount = _accountRepository.CountAccounts();
 
-            return account;
+                if (isAnotherAccount > 0)
+                {
+                    Account accountToDelete = _accountRepository.GetAccount();
+                    _accountRepository.DeleteAccount(accountToDelete);
+                }
+                
+                _accountRepository.RegisterDataToAccount(account);
+
+                return account;
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
 
 namespace BradshawProject
 {
@@ -28,14 +29,19 @@ namespace BradshawProject
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers()
+                    .AddNewtonsoftJson(x =>
+                        {
+                            x.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                        }
+                    );
 
             // Using In-Memory DB
             services.AddDbContext<ApiContext>(opt => opt.UseInMemoryDatabase("BradshawProject"));
 
             //Repositories
             services.AddScoped<IAccountRepository, AccountRepository>();
-            services.AddScoped<ILastTransactionsRepository, LastTransactionsRepository>();
+            services.AddScoped<ITransactionRepository, TransactionRepository>();
 
             //Services
             services.AddScoped<IAccountService, AccountService>();

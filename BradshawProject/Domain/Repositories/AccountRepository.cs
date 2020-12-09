@@ -21,6 +21,21 @@ namespace BradshawProject.Domain.Repositories
             return _context.Accounts.Count();
         }
 
+        public Account DeleteAccount(Account account)
+        {
+            try
+            {
+                _context.Accounts.Remove(account);
+                _context.SaveChanges();
+
+                return account;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public Account GetAccount()
         {
             try

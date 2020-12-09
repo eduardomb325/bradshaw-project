@@ -17,48 +17,62 @@ namespace BradshawProject.Domain.Services
 
         private readonly IConfiguration _configuration;
 
-        private readonly ILastTransactionsRepository _lastTransactionsRepository;
+        private readonly ITransactionRepository _transactionsRepository;
 
         private readonly double FirstBuyLimit;
 
         private readonly int MerchantLimit;
         public TransactionService(IAccountRepository accountRepository,
                 IConfiguration configuration,
-                ILastTransactionsRepository lastTransactionsRepository
+                ITransactionRepository transactionsRepository
             )
         {
             _accountRepository = accountRepository;
-            _lastTransactionsRepository = lastTransactionsRepository;
+            _transactionsRepository = transactionsRepository;
             _configuration = configuration;
             MerchantLimit = Convert.ToInt32(_configuration["MerchantLimitSell"]);
-            FirstBuyLimit = Convert.ToInt64(_configuration["FirstBuyLimit"]) / 100;
+            FirstBuyLimit = Convert.ToInt64(_configuration["FirstBuyLimit"]);
         }
-        public List<LastTransaction> GetLastTransactions()
+        public List<Transaction> GetLastTransactions()
         {
-            return _lastTransactionsRepository.GetLastTransactions();
+            return _transactionsRepository.GetLastTransactions();
+        }
+
+        public List<Transaction> SetLastTransactions(List<Transaction> transactions)
+        {
+            return _transactionsRepository.SaveLastTransactions(transactions);
         }
 
         public LastTransaction ProcessTransactionService(Transaction transaction)
         {
-            LastTransaction lastTransaction = (LastTransaction) transaction;
+            LastTransaction lastTransaction = new LastTransaction();
 
             Account account = _accountRepository.GetAccount();
 
-           List<RuleVerification> ruleVerificationList = RuleVerifications(account, transaction, lastTransaction);
-
-            List<string> deniedReasonsList = GetDeniedReasonsList(ruleVerificationList);
-
-            bool isTransactionApproval = deniedReasonsList.Count().Equals(0);
-
-            if (isTransactionApproval)
+            if (account != null)
             {
-                account.SubtractLimitValue(transaction.Amount);
-                _accountRepository.UpdateAccount(account);
+                List<RuleVerification> ruleVerificationList = RuleVerifications(account, transaction);
 
-                lastTransaction.UpdateNewLimit(account.Limit);
+                List<string> deniedReasonsList = GetDeniedReasonsList(ruleVerificationList);
+
+                bool isTransactionApproval = deniedReasonsList.Count().Equals(0);
+
+                if (isTransactionApproval)
+                {
+                    account.SubtractLimitValue(transaction.Amount);
+                    _accountRepository.UpdateAccount(account);
+
+                    lastTransaction.UpdateNewLimit(account.Limit);
+                    _transactionsRepository.SaveLastTransaction(transaction);
+                }
+
+                lastTransaction.Approved = isTransactionApproval;
+                lastTransaction.DeniedReasons.AddRange(deniedReasonsList);
             }
-
-            _lastTransactionsRepository.SaveLastTransaction(lastTransaction);
+            else
+            {
+                lastTransaction = GenerateEmptyAccountResponse();
+            }
 
             return lastTransaction;
         }
@@ -66,14 +80,25 @@ namespace BradshawProject.Domain.Services
 
         public List<string> GetDeniedReasonsList(List<RuleVerification> ruleVerifications)
         {
-            return ruleVerifications.Where(x => x.IsValidationPass.Equals(false))
+            return ruleVerifications.Where(x => x.IsValidationPass == false)
                                     .Select(x => x.ErrorMessage)
                                     .ToList();
         }
+
+        public LastTransaction GenerateEmptyAccountResponse()
+        {
+            LastTransaction lastTransaction = new LastTransaction();
+
+            lastTransaction.Approved = false;
+            lastTransaction.DeniedReasons.Add("No account is founded.");
+
+            return lastTransaction;
+        }
+
         private RuleVerification CanHaveAnotherTransactionInThisMinute(Transaction transaction)
         {
             DateTime transactionDateLessTwoMinutes = DateTime.Parse(transaction.Time).AddMinutes(-2);
-            int transactionsInTwoMinutes = _lastTransactionsRepository.CountTransactionsOverTheTime(transactionDateLessTwoMinutes);
+            int transactionsInTwoMinutes = _transactionsRepository.CountTransactionsOverTheTime(transactionDateLessTwoMinutes);
 
             bool isThreeTransactionLastThanTwoMinutes = false;
 
@@ -87,21 +112,21 @@ namespace BradshawProject.Domain.Services
             return response;
         }
 
-        public List<RuleVerification> RuleVerifications(Account account, Transaction transaction, LastTransaction lastTransaction)
+        public List<RuleVerification> RuleVerifications(Account account, Transaction transaction)
         {
             string merchant = transaction.Merchant;
 
-            int sameMerchantShopTimes = _lastTransactionsRepository.CountSellToMerchant(merchant);
+            int sameMerchantShopTimes = _transactionsRepository.CountSellToMerchant(merchant);
 
             List<RuleVerification> ruleVerificationList = new List<RuleVerification>();
 
-            ruleVerificationList.Add(lastTransaction.IsTransactionOverThanLimit(account.Limit, FirstBuyLimit));
+            ruleVerificationList.Add(transaction.IsTransactionOverThanLimit(account.Limit, FirstBuyLimit));
 
             ruleVerificationList.Add(account.IsCardIsActive());
 
             ruleVerificationList.Add(account.IsBlackListNotContainsThisMerchant(transaction.Merchant));
 
-            ruleVerificationList.Add(lastTransaction.CanThisMerchantSellsToAccount(sameMerchantShopTimes, MerchantLimit));
+            ruleVerificationList.Add(transaction.CanThisMerchantSellsToAccount(sameMerchantShopTimes, MerchantLimit));
 
             ruleVerificationList.Add(CanHaveAnotherTransactionInThisMinute(transaction));
 

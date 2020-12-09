@@ -41,5 +41,21 @@ namespace BradshawProject.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
+
+        [Route("/get")]
+        [HttpPost]
+        public IActionResult GetAccountController()
+        {
+            try
+            {
+                var response = _accountService.GetAccountData();
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
     }
 }

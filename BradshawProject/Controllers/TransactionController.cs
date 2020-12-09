@@ -26,7 +26,7 @@ namespace BradshawProject.Controllers
         {
             try
             {
-                List<LastTransaction> lastTransactions = _transactionService.GetLastTransactions();
+                List<Transaction> lastTransactions = _transactionService.GetLastTransactions();
 
                 return Ok(lastTransactions);
             }
@@ -37,6 +37,21 @@ namespace BradshawProject.Controllers
 
         }
 
+        [HttpPost]
+        [Route("set/lastTransactions")]
+        public IActionResult SetLastTransactionsController([FromBody] List<Transaction> lastTransactions)
+        {
+            try
+            {
+                var response = _transactionService.SetLastTransactions(lastTransactions);
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+            }
+        }
         [Route("/processTransaction")]
         [HttpPost]
         public IActionResult ProcessTransactionController([FromBody] Transaction transaction)
