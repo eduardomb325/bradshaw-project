@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BradshawProject.Domain.Objects;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
@@ -37,9 +38,23 @@ namespace BradshawProject.Objects
             return isValidLimit;
         }
 
-        public bool IsBlackListContainsThisMerchant(string merchant)
+        public RuleVerification IsBlackListNotContainsThisMerchant(string merchant)
         {
-            return Blacklist.Contains(merchant);
+            RuleVerification response = new RuleVerification(!Blacklist.Contains(merchant), "BlackList contains the Merchant");
+            
+            return response;
+        }
+
+        public RuleVerification IsCardIsActive()
+        {
+            RuleVerification response = new RuleVerification(CardIsActive, "Card is not active");
+
+            return response;
+        }
+
+        public void SubtractLimitValue(double transactionValue)
+        {
+            Limit -= transactionValue;
         }
     }
 }

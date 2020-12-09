@@ -1,6 +1,9 @@
 using BradshawProject.Domain.Repositories;
 using BradshawProject.Domain.Repositories.Context;
 using BradshawProject.Domain.Repositories.Interface;
+using BradshawProject.Domain.Repositories.Interfaces;
+using BradshawProject.Domain.Services;
+using BradshawProject.Domain.Services.Interfaces;
 using BradshawProject.Services;
 using BradshawProject.Services.Interface;
 using Microsoft.AspNetCore.Builder;
@@ -30,8 +33,13 @@ namespace BradshawProject
             // Using In-Memory DB
             services.AddDbContext<ApiContext>(opt => opt.UseInMemoryDatabase("BradshawProject"));
 
+            //Repositories
             services.AddScoped<IAccountRepository, AccountRepository>();
+            services.AddScoped<ILastTransactionsRepository, LastTransactionsRepository>();
+
+            //Services
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<ITransactionService, TransactionService>();
 
             //Adding Swagger
             services.AddSwaggerGen(config =>

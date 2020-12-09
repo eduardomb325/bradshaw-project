@@ -15,6 +15,12 @@ namespace BradshawProject.Domain.Repositories
         {
             _context = context;
         }
+
+        public int CountAccounts()
+        {
+            return _context.Accounts.Count();
+        }
+
         public Account GetAccount()
         {
             try
@@ -29,11 +35,29 @@ namespace BradshawProject.Domain.Repositories
             }
         }
 
-        public void RegisterDataToAccount(Account account)
+        public Account RegisterDataToAccount(Account account)
         {
             try
             {
                 _context.Accounts.Add(account);
+                _context.SaveChanges();
+
+                return account;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public Account UpdateAccount(Account account)
+        {
+            try
+            {
+                _context.Accounts.Update(account);
+                _context.SaveChanges();
+
+                return account;
             }
             catch (Exception ex)
             {

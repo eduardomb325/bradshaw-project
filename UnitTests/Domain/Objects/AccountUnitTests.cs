@@ -1,4 +1,5 @@
-﻿using BradshawProject.Objects;
+﻿using BradshawProject.Domain.Objects;
+using BradshawProject.Objects;
 using NUnit.Framework;
 using System.Collections.Generic;
 
@@ -8,7 +9,7 @@ namespace UnitTests.Domain.Objects
     {
 
         [Test]
-        public void When_BlackList_Has_This_Merchant_Returns_True()
+        public void When_BlackList_Has_This_Merchant_Returns_False()
         {
             List<string> blacklist = new List<string>();
 
@@ -20,13 +21,13 @@ namespace UnitTests.Domain.Objects
 
             account.Blacklist = blacklist;
 
-            bool isBlackListContainsThisMerchant = account.IsBlackListContainsThisMerchant("extra");
+            RuleVerification isBlackListContainsThisMerchant = account.IsBlackListNotContainsThisMerchant("extra");
 
-            Assert.IsTrue(isBlackListContainsThisMerchant);
+            Assert.IsFalse(isBlackListContainsThisMerchant.IsValidationPass);
         }
 
         [Test]
-        public void When_BlackList_Hasnt_Contains_This_Merchant_Returns_False()
+        public void When_BlackList_Hasnt_Contains_This_Merchant_Returns_True()
         {
             List<string> blacklist = new List<string>();
 
@@ -38,9 +39,33 @@ namespace UnitTests.Domain.Objects
 
             account.Blacklist = blacklist;
 
-            bool isBlackListContainsThisMerchant = account.IsBlackListContainsThisMerchant("dia");
+            RuleVerification isBlackListContainsThisMerchant = account.IsBlackListNotContainsThisMerchant("dia");
 
-            Assert.IsFalse(isBlackListContainsThisMerchant);
+            Assert.True(isBlackListContainsThisMerchant.IsValidationPass);
+        }
+
+        [Test]
+        public void When_Is_Card_Is_Actived_Returns_True()
+        {
+            Account account = new Account();
+
+            account.CardIsActive = true;
+
+            RuleVerification validateCardActive = account.IsCardIsActive();
+
+            Assert.IsTrue(validateCardActive.IsValidationPass);
+        }
+
+        [Test]
+        public void When_Is_Card_Isnt_Actived_Returns_False()
+        {
+            Account account = new Account();
+
+            account.CardIsActive = false;
+
+            RuleVerification validateCardActive = account.IsCardIsActive();
+
+            Assert.IsFalse(validateCardActive.IsValidationPass);
         }
 
         [Test]
@@ -66,5 +91,18 @@ namespace UnitTests.Domain.Objects
 
             Assert.IsFalse(validateLimit);
         }
+
+        [Test]
+        public void When_Subtract_Limit_Return_Updated_Limit() 
+        {
+            Account account = new Account();
+
+            account.Limit = 10;
+
+            account.SubtractLimitValue(5);
+
+            Assert.IsTrue(account.Limit.Equals(5));
+        }
+
     }
 }

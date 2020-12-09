@@ -8,7 +8,9 @@ namespace BradshawProject.Domain.Repositories.Interface
 {
     public interface IAccountRepository
     {
-        void RegisterDataToAccount(Account account);
+        int CountAccounts();
         Account GetAccount();
+        Account RegisterDataToAccount(Account account);
+        Account UpdateAccount(Account account);
     }
 }

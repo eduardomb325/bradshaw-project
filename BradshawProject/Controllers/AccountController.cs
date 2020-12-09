@@ -27,13 +27,18 @@ namespace BradshawProject.Controllers
         {
             try
             {
-                _accountService.RegisterDataToAccount(account);
+                if (account.IsValidLimit())
+                {
+                    var response = _accountService.RegisterDataToAccount(account);
 
-                return Ok();
+                    return Ok(response);
+                }
+
+                return BadRequest();
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
     }

@@ -21,14 +21,11 @@ namespace BradshawProject.Services
             return _accountRepository.GetAccount();
         }
 
-        public void RegisterDataToAccount(Account account)
+        public Account RegisterDataToAccount(Account account)
         {
-            if (!account.IsValidLimit())
-            {
-                
-            }
-
             _accountRepository.RegisterDataToAccount(account);
+
+            return account;
         }
     }
 }
